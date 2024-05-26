@@ -5,10 +5,14 @@ import Evaluation from "./Evaluation.js";
 
 const associations = () => {
   // Define associations with foreign key constraints
-  Course.hasMany(Teacher, { foreignKey: "courseId" }); // Teacher belongs to Course
-  Teacher.belongsTo(Course, { foreignKey: "courseId" }); // Bidirectional relationship
-  Evaluation.belongsTo(User, { foreignKey: "userId" }); // Evaluation belongs to User
-  Evaluation.belongsTo(Course, { foreignKey: "courseId" }); // Evaluation belongs to Course
+  Course.hasMany(Teacher, { foreignKey: "course_id" });
+  Teacher.belongsTo(Course, { foreignKey: "course_id" }); // Bidirectional relationship
+
+  User.hasMany(Evaluation, { foreignKey: "user_id" });
+  Evaluation.belongsTo(User, { foreignKey: "user_id" });
+
+  Course.hasMany(Evaluation, { foreignKey: "course_id" });
+  Evaluation.belongsTo(Course, { foreignKey: "course_id" });
 };
 
 const factory = {

@@ -1,17 +1,30 @@
-import DataTypes from 'sequelize';
-import sequelize from '../utils/database.js';
+import Sequelize from "sequelize";
+import sequelize from "../utils/database.js";
+import Course from "./Course.js";
 
-const Teacher = sequelize.define('teacher', {
+const Teacher = sequelize.define(
+  "teacher",
+  {
     id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-        primaryKey: true
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+      allowNull: false,
+      primaryKey: true,
     },
     name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    }
-},{ underscored : true });
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    // Defining foreign key
+    course_id: {
+      type: Sequelize.INTEGER,
+      references: {
+        model: Course,
+        key: "id",
+      },
+    },
+  },
+  { underscored: true }
+);
 
 export default Teacher;

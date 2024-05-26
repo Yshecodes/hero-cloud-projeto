@@ -1,5 +1,5 @@
 import express from "express";
-let router = express.Router();
+const router = express.Router();
 import userController from "./UserController.js";
 import teacherController from "./TeacherController.js";
 import evaluationController from "./EvaluationController.js";

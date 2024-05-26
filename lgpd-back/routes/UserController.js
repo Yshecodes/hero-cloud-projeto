@@ -3,7 +3,7 @@ import userService from "../services/UserService.js";
 import multer from "multer";
 import process from "process";
 
-let router = express.Router();
+const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
