@@ -6,83 +6,92 @@ import process from "process";
 let router = express.Router();
 
 const storage = multer.diskStorage({
-    destination: function (req, file, callback) {
-        callback(null, './images');
-    },
-    filename: function (req, file, callback) {
-        callback(null, req.body.first_name + "_" + req.body.last_name + "_" + Date.now() + file.originalname);
-    }
+  destination: function (req, file, callback) {
+    callback(null, "./images");
+  },
+  filename: function (req, file, callback) {
+    callback(
+      null,
+      req.body.first_name +
+        "_" +
+        req.body.last_name +
+        "_" +
+        Date.now() +
+        file.originalname
+    );
+  },
 });
-const upload = multer({ storage: storage }).single('file');
+const upload = multer({ storage: storage }).single("file");
 
 // salvar usuario
 router.post("/addUser", async function (req, res) {
+  upload(req, res, async function (err) {
+    const userModel = {
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      email: req.body.email,
+      gender: req.body.gender,
+      profile_picture: req.file.path,
+    };
 
-    upload(req, res, async function (err) {
-        const userModel = {
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            email: req.body.email,
-            gender: req.body.gender,
-            profile_picture: req.file.path
-        }
-
-        if (err) {
-            return res.end("Error uploading file.");
-        }
-
-        const user = await userService.saveUser(userModel);
-        return res.status(200).json(user);
-
+    if (err) {
+      return res.end("Error uploading file.");
     }
 
-    );
-
+    const user = await userService.saveUser(userModel);
+    return res.status(200).json(user);
+  });
 });
 
 // buscar todos usuarios
 router.get("/getAllUsers", async function (req, res) {
-    const allUsers = await userService.getAllUsers();
-    return res.status(200).json(allUsers);
+  const allUsers = await userService.getAllUsers();
+  return res.status(200).json(allUsers);
 });
 
 // buscar por id
 router.get("/user/:id", async function (req, res) {
-    const user = await userService.getUserById(req.params.id);
-    return res.status(200).json(user);
+  const user = await userService.getUserById(req.params.id);
+  return res.status(200).json(user);
 });
 
 // deletar por id
 router.delete("/deleteUser/:id", async function (req, res) {
-    const user = await userService.deleteUserById(req.params.id);
-    return res.status(200).json(user);
+  const user = await userService.deleteUserById(req.params.id);
+  return res.status(200).json(user);
 });
 
 //  atualizar por id
 router.put("/updateUser/:id", async function (req, res) {
-    upload(req, res, async function (err) {
-        // adicionar upload
-        const userModel = {
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            email: req.body.email,
-            gender: req.body.gender,
-            profile_picture: req.file.path
-        }
+  upload(req, res, async function (err) {
+    if (err) {
+      return res.status(500).json({ error: "Error uploading file." });
+    }
 
-        if (err) {
-            return res.end("Error uploading file.");
-        }
+    const userModel = {
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      email: req.body.email,
+      gender: req.body.gender,
+    };
 
-        const user = await userService.updateUserById(req.params.id, userModel);
-        return res.status(200).json(user);
-    });
+    // Check if req.file exists before accessing req.file.path
+    if (req.file) {
+      userModel.profile_picture = req.file.path;
+    }
+
+    const user = await userService.updateUserById(req.params.id, userModel);
+    return res.status(200).json(user);
+  });
 });
 
-router.get('/userImage/:id', async function (req, res){
-    const user = await userService.getUserById(req.params.id);
-    res.sendFile(process.cwd() + "\\" + user.profile_picture);
+import path from "path"; // Import the 'path' module
 
+// Your route handler code
+router.get("/userImage/:id", async function (req, res) {
+  const user = await userService.getUserById(req.params.id);
+  const imagePath = path.join(process.cwd(), user.profile_picture); // Construct the file path using 'path.join()'
+  res.sendFile(imagePath);
 });
 
 export default router;

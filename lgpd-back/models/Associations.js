@@ -4,14 +4,15 @@ import Teacher from "./Teacher.js";
 import Evaluation from "./Evaluation.js";
 
 const associations = () => {
-
-    Course.hasMany(Teacher);
-    User.hasMany(Evaluation);
-    Course.hasMany(Evaluation);
-}
+  // Define associations with foreign key constraints
+  Course.hasMany(Teacher, { foreignKey: "courseId" }); // Teacher belongs to Course
+  Teacher.belongsTo(Course, { foreignKey: "courseId" }); // Bidirectional relationship
+  Evaluation.belongsTo(User, { foreignKey: "userId" }); // Evaluation belongs to User
+  Evaluation.belongsTo(Course, { foreignKey: "courseId" }); // Evaluation belongs to Course
+};
 
 const factory = {
-    associations
-}
+  associations,
+};
 
 export default factory;
